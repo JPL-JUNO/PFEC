@@ -1,0 +1,76 @@
+\usepackage{amsmath}
+
+\usepackage{mathptmx}
+\usepackage{minted}
+\usepackage{tcolorbox}
+\usepackage{epigraph}
+\usepackage{caption}
+\usepackage{graphicx}
+\setkeys{Gin}{width=0.75\textwidth}
+\usepackage{listings}
+
+
+\setminted[python]{bgcolor=orange!5, linenos, breakanywhere=true}
+%定义新的minted命令
+\newminted[pyc]{python}{}
+
+
+\title{\textbf{Hands-on
+Machine Learning\\
+with Scikit-Learn,
+Keras \& TensorFlow} \\
+\large Concepts, Tools, and Techniques
+to Build Intelligent Systems
+
+	}
+	
+\author{Stephen CUI\thanks{cuixuanStephen@gmail.com}
+}
+\date{October 30, 2022}
+\newcommand\explain[2]{
+\begin{tcolorbox}[breakable,colback=orange!5,colframe=orange!95!black,title=\textbf{#1}, breakable]
+#2
+\end{tcolorbox}
+}
+
+\newcommand\tips[1]{\textbf{Tips: } #1}
+\newcommand\notes[1]{\textbf{Notes: } #1}
+\newcommand\warning[1]{\textbf{Warning: } #1}
+\newcommand\figures[1]{
+\begin{figure}
+\centering
+\includegraphics{img/codes/#1.png}
+\caption{#1}
+\label{#1}
+\end{figure}
+}
+
+
+\tcbuselibrary{minted, skins, breakable}
+\newtcblisting[auto counter, number within =section]{py}[1]{listing engine=minted,
+						 minted style=colorful,
+						 minted language=python,
+						 minted options={breaklines,autogobble,linenos,numbersep=3mm},
+						 colback=orange!5!white,colframe=orange!70!black,listing only, left=5mm,enhanced,
+						 title=Examples~\thetcbcounter~#1,
+						 breakable,
+						 enhanced
+%						 overlay={
+%						 	\begin{tcbclipinterior}
+%						 		\fill[red!30!white] (frame.south west)
+%						 		rectangle ([xshift=5mm]frame.north west);
+%							\end{tcbclipinterior}}
+							}
+							
+\usepackage{geometry}
+\geometry{left=2.45cm,right=2.45cm, top=2.77cm, bottom=2.77cm}
+
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=orange!95!black,
+	filecolor=blue,      
+	urlcolor=orange!80!white,
+	citecolor=green,
+}
+
