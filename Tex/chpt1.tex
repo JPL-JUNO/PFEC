@@ -500,4 +500,79 @@ On line 45, 此处的Pipeline首先在DataFrame后面添加了存在missing valu
 modifying only the appropriate variables. So there is no need to slice the data or pass the 
 variable names as arguments to the transformers in this case
 
-\section{Performing multivariate imputation by chained equations}
+\section{Performing multivariate imputation by chained equations (\href{https://cran.r-project.org/web/packages/miceRanger/vignettes/miceAlgorithm.html}{MICE})}
+Multivariate imputation methods, as opposed to univariate imputation, use multiple variables to estimate the missing values. In other words, the missing values of a variable are modeled based on the other variables in the dataset. \textbf{Multivariate Imputation by Chained Equations (MICE)} models each variable with missing values as a function of the remaining variables and uses that estimate for imputation.
+
+The following steps are required to perform MICE:
+\begin{enumerate}
+    \item A simple univariate imputation is performed for every variable with missing data, for example, median imputation.
+    \item One specific variable is selected, say, \verb|var_1|, and the missing values are set back to missing.
+    \item A model is trained to predict \verb|var_1| using the remaining variables as input features.
+    \item The missing values of \verb|var_1| are replaced with the new estimates.
+    \item Steps 2 to 4 are repeated for each of the remaining variables.
+\end{enumerate}
+
+这里有个MICE的\href{https://www.numpyninja.com/post/mice-algorithm-to-impute-missing-values-in-a-dataset}{例子}，更详细的内容见\href{https://www.jstatsoft.org/article/view/v045i03}{Paper}。
+
+Once all the variables have been modeled based on the rest, a cycle of imputation is concluded. Multiple imputation cycles are carried out, typically 10. The idea is that by the end of the cycles, the distribution of the imputation parameters should have converged, which means that we should have found the best estimates for the missing data.
+
+\subsection{How to do it...}
+\begin{pyc}
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import BayesianRidge
+from sklearn.impute import IterativeImputer
+
+variables = ['A2', 'A3', 'A8', 'A11', 'A14', 'A15', 'target']
+
+data = pd.read_csv('../data/credit_approval_uci.csv',
+                   usecols=variables)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    data.drop('target', axis='columns'), data['target'],
+    test_size=.3, random_state=37
+)
+
+imputer = IterativeImputer(
+    estimator=BayesianRidge(),
+    max_iter=10, random_state=37
+)
+
+imputer.fit(X_train)
+X_train = imputer.transform(X_train)
+X_test = imputer.transform(X_test)
+# Remember that scikit-learn returns NumPy arrays and not DataFrames.
+pd.DataFrame(X_train).isnull().any().any()
+pd.DataFrame(X_test).isnull().any().any()
+\end{pyc}
+\subsection{See also}
+
+\begin{itemize}
+    \item \href{https://www.researchgate.net/publication/244959137_A_Multivariate_Technique_for_Multiply_Imputing_Missing_Values_Using_a_Sequence_of_Regression_Models}{A Multivariate Technique for Multiply Imputing Missing Values Using a Sequence of Regression Models}
+    \item \href{https://www.jstatsoft.org/article/view/v045i03}{mice: Multivariate Imputation by Chained Equations in R}
+\end{itemize}
+
+\section{Estimating missing data with nearest neighbors}
+In imputation with \textbf{K-Nearest Neighbors (KNN)}, missing values are replaced with the mean value from their k closest neighbors. The neighbors of each observation are found utilizing distances like the Euclidean distance, and the replacement value can be estimated as the mean or weighted mean of the neighbor’s value, where further neighbors have less influence on the replacement value.
+\subsection{How to do it...}
+\begin{pyc}
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.impute import KNNImputer
+
+variables = ['A2', 'A3', 'A8', 'A11', 'A14', 'A15', 'target']
+data = pd.read_csv('../data/credit_approval_uci.csv',
+                    usecols=variables)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    data.drop('target', axis='columns'),
+    data['target'], test_size=.3, random_state=37
+)
+
+imputer = KNNImputer(n_neighbors=5, weights='distance')
+imputer.fit(X_train)
+X_train = imputer.transform(X_train)
+X_test = imputer.transform(X_test)
+pd.DataFrame(X_train).isnull().any().any()
+pd.DataFrame(X_test).isnull().any().any()
+\end{pyc}
