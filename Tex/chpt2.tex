@@ -1,0 +1,64 @@
+\chapter{Encoding Categorical Variables}
+Categorical variables are those whose values are selected from a group of categories or labels.  In some categorical variables, the labels have an intrinsic order. These are called ordinal categorical variables. Variables in which the categories do not have an intrinsic order are called nominal categorical variables。
+
+The values of categorical variables are often encoded as strings. To train mathematical or machine learning models, we need to transform those strings into numbers. The act of replacing strings with numbers is called categorical encoding. 
+
+\paragraph{补充：}数据的四个等级
+\begin{enumerate}
+    \item nominal level（定类等级）
+    \item ordinal level（定序等级）
+    \item interval level（定距等级）
+    \item ratio level（定比等级）
+\end{enumerate}
+
+The values of categorical variables are often encoded as strings. To train mathematical or machine learning models, we need to transform those strings into numbers. The act of replacing strings with numbers is called categorical encoding. 
+
+\section{Technical requirements}
+We will also use the open-source \href{https://contrib.scikit-learn.org/category_encoders/}{Category Encoders} Python library, which can be installed using pip:
+\begin{pyc}
+pip install category_encoders
+\end{pyc}
+
+We will also use the Credit Approval dataset(\autoref{credit_approval_uci} \nameref{credit_approval_uci}).
+
+\begin{pyc}
+import random
+import numpy as np
+import pandas as pd
+
+data = pd.read_csv('../data/credit_approval_uci.csv')
+
+cat_cols = [
+    c for c in data.columns if data[c].dtypes == 'O'
+]
+num_cols = [
+    c for c in data.columns if data[c].dtypes != 'O'
+]
+
+data[num_cols] = data[num_cols].fillna(0)
+data[cat_cols] = data[cat_cols].fillna('Missing')
+
+if(not data.isnull().any().any()):
+    print('not exist missing value')
+\end{pyc}
+\section{Creating binary variables through one-hot encoding}
+In one-hot encoding, we represent a categorical variable as a group of binary variables, where each binary variable represents one category. The binary variable takes a value of 1 if the category is present in an observation, or 0 otherwise.
+
+\textbf{A categorical variable with $k$ unique categories can be encoded using $k-1$ binary variables.} For the Color variable, which has three categories ($k=3$; red, 
+blue, and green), we need to create two ($k - 1 = 2$) binary variables to capture all the information so that the following occurs:
+\begin{itemize}
+    \item If the observation is red, it will be captured by the red variable (red = 1, blue = 0).
+    \item If the observation is blue, it will be captured by the blue variable (red = 0, blue = 1).
+    \item If the observation is green, it will be captured by the combination of red and blue (red = 0, 
+    blue = 0).    
+\end{itemize}
+
+Encoding into $k-1$ binary variables is well-suited for linear models. \textbf{There are a few occasions in which we may prefer to encode the categorical variables with $k$ binary variables:}
+
+\begin{itemize}
+    \item When training decision trees since they do not evaluate the entire feature space at the same time.
+    \item When selecting features recursively.
+    \item When determining the importance of each category within a variable.
+\end{itemize}
+\subsection{How to do it...}
+In this recipe, we will compare the one-hot encoding implementations of pandas, scikit-learn, Feature-engine, and Category Encoders.
