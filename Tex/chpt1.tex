@@ -34,7 +34,7 @@ data.to_csv('data/credit_approval_uci.csv', index=False)
 Make sure you store the dataset in the same folder from which you will execute the code in
 the recipes.}
 
-处理后的数据集有一个target字段以及15个（A1-A15）特征字段组成。其中A11, A12, A13, A15, Target不包含缺失值，\autoref{Proportion of missing data per variable}。
+处理后的数据集有一个target字段以及15个（A1-A15）特征字段组成。其中A11, A12, A13, A15, Target不包含缺失值（\autoref{Proportion of missing data per variable}）。
 
 \section{Removing observations with missing data}
 \textbf{Complete Case Analysis (CCA)}, also called list-wise deletion of cases, consists of discarding observations
@@ -64,7 +64,7 @@ print(cca.variables_)
 data_cca = cca.transform(data)
 \end{pyc}
 
-\Tips{The dropna() method drops observations with any missing value by default. We can remove observations with missing data in a subset of variables like this: data.dropna(subset=["A3","A4"]).}
+\Tips{The dropna() method drops observations with any missing value by default. We can remove observations with missing data in a subset of variables like this: \texttt{data.dropna(subset=["A3","A4"])}.}
 
 \Tips{To remove observations with missing data in a subset of variables, use DropMissingData(variables=['A3', 'A4']). To remove observations with missing values in at least 5\% of the variables, use DropMissingData(threshold=0.95).}
 
@@ -325,14 +325,14 @@ print(X_train[arbitrary_cols].isnull().any().any())
 print(X_test[arbitrary_cols].isnull().any().any())
 \end{pyc}
 
-第16行，首先要找到需要处理缺失值的最大值，然后将填充的任意值设置为比这个最大值要大。
+第16行，首先要找到需要处理缺失值字段的最大值，然后将填充的任意值设置为比这个最大值要大。
 
 第18-19行，也可以使用\verb|imputation_dict|为每列单独设置填充值，将字典的key和value分别设置为字段名和想要填充的任意值。
 
 第28行，如果你的数据集存在有缺失值的分类变量，那么\verb|SimpleImputer()|也会用value将其填充。
 
 On line 41，\verb|ArbitraryNumberImputer()| can automatically select all numerical variables in the
-train set if we set the \verb|variables| parameter to None.
+train set if we set the \verb|variables| parameter to \verb|None|.
 
 \section{Finding extreme values for imputation}
 Replacing missing values with a value at the end of the variable distribution (extreme values) is
