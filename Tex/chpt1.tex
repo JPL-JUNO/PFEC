@@ -146,31 +146,21 @@ print(X_test[numeric_vars].isnull().any().any())
 \end{pyc}
 \subsection{How it works...}
 The mean or median values should be learned from the train set variables. Thus, we divided the
-dataset into train and test sets using scikit-learn’s \verb|train_test_split()| function. The function
+dataset into train and test sets using scikit-learn's \verb|train_test_split()| function. The function
 takes the predictor variables, the target, the fraction of observations to retain in the test set, and a
 \verb|random_state| value for reproducibility as arguments. We obtained a train set with 70\% of the
 original observations and a test set with 30\% of the original observations. The 70:30 split was done
 at random.
 
 To replace the missing values using scikit-learn, we used \verb|SimpleImputer()| with strategy
-set to "median". To impute only numerical variables, we used \verb|ColumnTransformer()|, which
-takes the imputer and the numerical variable names in a list as parameters. With the passthrough
-argument set to "remainder", we make \verb|ColumnTransformer()| \textbf{return all the variables in the
-final output, the imputed ones followed by the remaining ones.}
+set to "median". To impute only numerical variables, we used \verb|ColumnTransformer()|, which takes the imputer and the numerical variable names in a list as parameters. With the passthrough argument set to "remainder", we make \verb|ColumnTransformer()| \textbf{return all the variables in the final output, the imputed ones followed by the remaining ones.}
 
 \Tips{
-SimpleImputer() operates on the entire DataFrame and returns NumPy arrays. To
-impute just a subset of variables, we need to use ColumnTransformer(). In contrast,
-MeanMedianImputer() can take an entire DataFrame and yet it will only impute the
-specified variables, returning a pandas DataFrame.
+SimpleImputer() operates on the entire DataFrame and returns NumPy arrays. To impute just a subset of variables, we need to use ColumnTransformer(). In contrast, MeanMedianImputer() can take an entire DataFrame and yet it will only impute the specified variables, returning a pandas DataFrame.
 }
 
 \section{Imputing categorical variables}
-Categorical variables usually contain strings as values, instead of numbers. We replace missing data
-in categorical variables with the most frequent category, or with a different string. Frequent categories
-are estimated using the train set and then used to impute values in the train, test, and future datasets.
-Thus, we need to learn and store these values, which we can do using scikit-learn and feature-
-engine’s out-of-the-box transformers.
+Categorical variables usually contain strings as values, instead of numbers. We replace missing data in categorical variables with the most frequent category, or with a different string. Frequent categories are estimated using the train set and then used to impute values in the train, test, and future datasets. Thus, we need to learn and store these values, which we can do using scikit-learn and feature-engine's out-of-the-box transformers.
 \subsection{How to do it...}
 
 \begin{pyc}
@@ -406,7 +396,7 @@ the value to replace missing data using \verb|imputation_dict = (X_train.mean() 
 
 On line 37-41, To use the mean and standard deviation to calculate the replacement values, we need to set
 \verb|imputation_method="Gaussian"|. We can use 'left' or 'right' in the tail
-argument to specify the side of the distribution where we’ll place the missing values.
+argument to specify the side of the distribution where we'll place the missing values.
 
 \section{Marking imputed values}
 A missing indicator is a binary variable that takes the value 1 or True to indicate whether a value was 
@@ -553,7 +543,7 @@ pd.DataFrame(X_test).isnull().any().any()
 \end{itemize}
 
 \section{Estimating missing data with nearest neighbors}
-In imputation with \textbf{K-Nearest Neighbors (KNN)}, missing values are replaced with the mean value from their k closest neighbors. The neighbors of each observation are found utilizing distances like the Euclidean distance, and the replacement value can be estimated as the mean or weighted mean of the neighbor’s value, where further neighbors have less influence on the replacement value.
+In imputation with \textbf{K-Nearest Neighbors (KNN)}, missing values are replaced with the mean value from their k closest neighbors. The neighbors of each observation are found utilizing distances like the Euclidean distance, and the replacement value can be estimated as the mean or weighted mean of the neighbor's value, where further neighbors have less influence on the replacement value.
 \subsection{How to do it...}
 \begin{pyc}
 import pandas as pd
