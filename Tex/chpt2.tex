@@ -166,5 +166,72 @@ X_test_enc = ohe_enc.transform(X_test)
 ohe_enc.get_feature_names_out()
 \end{pyc}
 
-\subsection{Performing one-hot encoding of frequent categories}
+\section{Performing one-hot encoding of frequent categories}
 One-hot encoding represents each variable’s category with a binary variable. Hence, one-hot encoding of highly cardinal variables or datasets with multiple categorical features can expand the feature space dramatically. This, in turn, may increase the computational cost of using machine learning models or deteriorate their performance. To reduce the number of binary variables, we can perform one-hot encoding of the most frequent categories. One-hot encoding the top categories is equivalent to treating the remaining, less frequent categories as a single, unique category.
+
+\subsection{How to do it...}
+\begin{pyc}
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from feature_engine.encoding import OneHotEncoder
+\end{pyc}
+
+\begin{pyc}
+data = pd.read_csv('../data/credit_approval_uci.csv')
+X_train, X_test, y_train, y_test = train_test_split(
+    data.drop(labels=['target'], axis='columns'), data['target'],
+    test_size=.3,
+    random_state=0
+)
+\end{pyc}
+
+数据集必须在统计最大频数之前切割，避免出现数据泄露。
+
+The most frequent categories need to be determined in the train set. This is to avoid data leakage.
+
+\begin{pyc}
+X_train['A6'].unique()
+X_train['A6'].value_counts().sort_values(ascending=False).head(5)
+
+top_5 = [
+    x for x in X_train['A6'].value_counts().sort_values(
+        ascending=False).head(5).index
+]
+top_5
+
+for label in top_5:
+    X_train[f'A6_{label}'] = np.where(X_train['A6'] == label, 1, 0)
+    X_test[f'A6_{label}'] = np.where(X_test['A6'] == label, 1, 0)
+
+X_train[['A6']+ [f'A6_{label}' for label in top_5]].sample(10)
+\end{pyc}
+
+在下面代码执行之前，需要运行数据集切割的代码。
+
+\begin{pyc}
+ohe_enc = OneHotEncoder(top_categories=5, variables=['A6', 'A7'])
+ohe_enc.fit(X_train)
+X_train_enc = ohe_enc.transform(X_train)
+X_test_enc = ohe_enc.transform(X_test)
+\end{pyc}
+
+Feature-engine’s OneHotEncoder() will encode all categorical variables in the dataset by 
+default unless we specify the variables to encode.
+
+You can view the new binary variables in the DataFrame by executing \verb|X_train_enc.head()|. You 
+can also find the top five categories learned by the encoder by executing \verb|ohe_enc.encoder_dict_|.
+
+Feature-engine replaces the original variable with the binary ones returned by one-hot encoding, leaving the dataset ready to use in machine learning.
+
+\subsection{There's more...}
+This recipe is based on the winning solution of the KDD 2009 cup, \href{http://proceedings.mlr.press/v7/niculescu09/niculescu09.pdf}{Winning the KDD Cup Orange Challenge with Ensemble Selection}, where the authors limited one-hot encoding to the 10 most frequent categories of each variable.
+
+\section{Replacing categories with counts or the frequency of observations}
+In count or frequency encoding, we replace the categories with the count or the fraction of observations showing that category. These encoding methods, which capture the representation of each label in a dataset, are very popular in data science competitions. \textbf{The assumption is that the number of observations per category is somewhat predictive of the target.}
+
+\Tips{
+Note that if two different categories are present in the same number of observations, they will be replaced by the same value, which leads to information loss.
+
+如果两个不同的特征具有相同的频数或者counts，那么这两个特征将会具有相同的值，这将导致信息的减少。
+}
